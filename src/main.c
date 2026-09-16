@@ -21,7 +21,6 @@ int main(void)
 
         static s32 old_x = 0;
 
-
         for (int yy = y; yy < y + h; yy++)
             for (int xx = old_x; xx < x; xx++)
                 pixel_put(xx, yy, COL_BLACK);
@@ -33,5 +32,8 @@ int main(void)
                 pixel_put(xx, yy, COL_RED);
 
         x++;
+
+        if (x > 240)
+            x = 0;
     }
 }
