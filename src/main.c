@@ -5,12 +5,30 @@ struct obj_attribute oam_shadow[128] = {0};
 
 void hw_sprite_update(void)
 {
-    volatile u32 *destination = (volatile u32 *)OVROM_ADDR;
-    u32 *source = (u32 *)oam_shadow;
+    dma3_copy(oam_shadow, (void *)OVRAM_ADDR, sizeof(oam_shadow) / sizeof(u16));
+}
 
-    for (int i = 0; i < (128 * sizeof(struct obj_attribute) >> 2); i++)
+/* Made this by hand */
+static const u8 slime[8 * 8] =
+{
+    0, 0, 1, 1, 1, 1, 0, 0,
+    0, 1, 3, 3, 3, 3, 1, 0,
+    1, 2, 2, 2, 2, 3, 3, 1,
+    1, 2, 1, 2, 3, 1, 3, 1,
+    1, 2, 1, 2, 3, 1, 3, 1,
+    1, 2, 2, 2, 3, 3, 3, 1,
+    0, 1, 3, 3, 3, 3, 1, 0,
+    0, 0, 1, 1, 1, 1, 0, 0
+};
+
+static u8 slime_4bpp[32];
+
+static void pack_sprite(void)
+{
+    /* What the heck I have to do this? */
+    for (int i = 0; i < 64; i += 2)
     {
-        destination[i] = source[i];
+        slime_4bpp[i >> 1] = (slime[i] & 0xf) | ((slime[i + 1] & 0xf) << 4);
     }
 }
 
@@ -26,16 +44,16 @@ int main(void)
     }
 
     oam_shadow[0].attr0 = 0;
-    oam_shadow[0].attr1 = 1 << 14;
+    oam_shadow[0].attr1 = SPRITE_SIZE_8x8;
     oam_shadow[0].attr2 = 0;
 
-    OBJ_PALRAM[1] = COL_GREEN;
+    OBJ_PALRAM[1] = COL_WHITE;
+    OBJ_PALRAM[2] = rgb(135, 255, 169);
+    OBJ_PALRAM[3] = rgb(80, 211, 214);
 
-    /* Note to self: u8 writes to OBJ_VRAM breaks the thing */
-    for (int i = 0; i < (16 << 2); i++)
-    {
-        OBJ_VRAM[i] = 0x1111;
-    }
+    pack_sprite();
+
+    dma3_copy((const void *)slime_4bpp, (void *)OBJ_VRAM, sizeof(slime_4bpp) / sizeof(u16));
 
     hw_sprite_update();
 
@@ -51,7 +69,7 @@ int main(void)
         oam_shadow[0].attr0 = (oam_shadow[0].attr0 & ~0x00ff) | (y & 0xff);
         oam_shadow[0].attr1 = (oam_shadow[0].attr1 & ~0x01ff) | (x & 0x1ff);
 
-        if (x + 16 > DISP_W)
+        if (x + 8 > DISP_W)
         {
             x = 0;
         }

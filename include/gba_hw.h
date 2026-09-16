@@ -15,9 +15,9 @@
 #define PALRAM     ((volatile u16 *)0x05000000)
 #define OBJ_PALRAM ((volatile u16 *)0x05000200)
 #define VRAM       ((volatile u16 *)0x06000000)
-#define OBJ_VRAM ((volatile u16 *)0x06010000)
-#define OVROM_ADDR (0x07000000)
-#define OVRAM      ((volatile u8 *)0x07000000)
+#define OBJ_VRAM   ((volatile u16 *)0x06010000)
+#define OVRAM_ADDR (0x07000000)
+#define OVRAM      ((volatile u8 *)OVRAM_ADDR)
 #define ROM        ((const volatile u8 *)0x08000000)
 #define SRAM       ((volatile u8 *)0x0E000000)
 

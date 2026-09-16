@@ -42,6 +42,13 @@ static inline void pixel_put(s32 x, s32 y, u16 colour)
     VRAM[y * 240 + x] = colour;
 }
 
+void dma3_copy(const void *source, void *dest, u32 count)
+{
+    REG_DMA3_SAD = (u32)source;
+    REG_DMA3_DAD = (u32)dest;
+    REG_DMA3_CNT = count | (0 << 21) | (0 << 23) | (0 << 26) | (1 << 31);
+}
+
 void sprite_set_position(struct obj_attribute* sprite, s32 x, s32 y)
 {
     sprite->attr0 = (sprite->attr0 & ~0x00FF) | (y & 0x00FF);

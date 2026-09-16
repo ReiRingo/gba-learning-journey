@@ -11,4 +11,9 @@ struct obj_attribute
     s16 fill;
 } __attribute__((packed, aligned(4)));
 
+#define SPRITE_SIZE_8x8   (0 << 14)
+#define SPRITE_SIZE_16x16 (1 << 14)
+#define SPRITE_SIZE_32x32 (2 << 14)
+#define SPRITE_SIZE_64x64 (3 << 14)
+
 #endif
