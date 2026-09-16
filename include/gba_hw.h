@@ -30,7 +30,7 @@
 #define REG_KEYINPUT (*(volatile u16 *)0x04000130)
 
 
-/* -- Interupts -- */
+/* -- Interrupts -- */
 
 #define REG_IE       (*(volatile u16 *)0x04000200)
 #define REG_IF       (*(volatile u16 *)0x04000202)
