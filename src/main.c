@@ -1,10 +1,24 @@
 #include "gba_funcs.h"
 #include "gba_colours.h"
 
+struct obj_attribute oam_shadow[128];
+
+void hw_sprite_update(void)
+{
+    volatile u32 *destination = (volatile u32 *)OVROM_ADDR;
+    u32 *source = (u32 *)oam_shadow;
+
+    for (int i = 0; i < (128 * sizeof(struct obj_attribute) >> 2); i++)
+    {
+        destination[i] = source[i];
+    }
+}
+
 int main(void)
 {
-    REG_DISPCNT = MODE3 | BG2_ENABLE;
+    REG_DISPCNT = MODE3 | BG2_ENABLE; /*| OBJ_ENABLE; */
 
+    /* Don't mind these, these are just for test */
     s32 x;
     s32 y;
     s32 w;

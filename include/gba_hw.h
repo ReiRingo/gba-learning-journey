@@ -8,14 +8,15 @@
 
 /* -- Memory Regions -- */
 
-#define EWRAM   ((volatile u8 *)0x02000000)
-#define IWRAM   ((volatile u8 *)0x03000000)
-#define IO      ((volatile u8 *)0x04000000)
-#define PALRAM  ((volatile u8 *)0x05000000)
-#define VRAM    ((volatile u16 *)0x06000000)
-#define OVRAM   ((volatile u8 *)0x07000000)
-#define ROM     ((const volatile u8 *)0x08000000)
-#define SRAM    ((volatile u8 *)0x0E000000)
+#define EWRAM      ((volatile u8 *)0x02000000)
+#define IWRAM      ((volatile u8 *)0x03000000)
+#define IO         ((volatile u8 *)0x04000000)
+#define PALRAM     ((volatile u8 *)0x05000000)
+#define VRAM       ((volatile u16 *)0x06000000)
+#define OVROM_ADDR (0x07000000)
+#define OVRAM      ((volatile u8 *)0x07000000)
+#define ROM        ((const volatile u8 *)0x08000000)
+#define SRAM       ((volatile u8 *)0x0E000000)
 
 
 /* -- Display -- */

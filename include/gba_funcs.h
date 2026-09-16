@@ -1,7 +1,7 @@
 #ifndef GBA_FUNCS_H
 #define GBA_FUNCS_H
 
-#include "gba_hw.h"
+#include "gba_sprites.h"
 
 static inline void vblank_wait(void)
 {
@@ -40,6 +40,12 @@ static inline struct colour_vec rgb_vec3(u16 colour)
 static inline void pixel_put(s32 x, s32 y, u16 colour)
 {
     VRAM[y * 240 + x] = colour;
+}
+
+void sprite_set_position(struct obj_attribute* sprite, s32 x, s32 y)
+{
+    sprite->attr0 = (sprite->attr0 & ~0x00FF) | (y & 0x00FF);
+    sprite->attr1 = (sprite->attr1 & ~0x01FF) | (x & 0x01FF);
 }
 
 #endif
