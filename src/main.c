@@ -1,4 +1,4 @@
-#include "gba_funcs.h"
+#include "gba.h"
 #include "gba_colours.h"
 
 struct obj_attribute oam_shadow[128] = {0};
@@ -25,23 +25,38 @@ int main(void)
         oam_shadow[i].attr2 = 0;
     }
 
-    oam_shadow[0].attr0 = 50;
-    oam_shadow[0].attr1 = 100 | (1 << 14);
+    oam_shadow[0].attr0 = 0;
+    oam_shadow[0].attr1 = 1 << 14;
     oam_shadow[0].attr2 = 0;
 
-    OBJ_PALRAM[1] = COL_RED;
+    OBJ_PALRAM[1] = COL_GREEN;
 
     /* Note to self: u8 writes to OBJ_VRAM breaks the thing */
-    for (int i = 0; i < 16 * 4; i++)
+    for (int i = 0; i < (16 << 2); i++)
     {
         OBJ_VRAM[i] = 0x1111;
     }
 
     hw_sprite_update();
 
+    s32 x = DISP_W >> 1;
+    s32 y = DISP_H >> 1;
+
     for (;;)
     {
         vblank_wait();
+
+        x++;
+
+        oam_shadow[0].attr0 = (oam_shadow[0].attr0 & ~0x00ff) | (y & 0xff);
+        oam_shadow[0].attr1 = (oam_shadow[0].attr1 & ~0x01ff) | (x & 0x1ff);
+
+        if (x + 16 > DISP_W)
+        {
+            x = 0;
+        }
+
+        hw_sprite_update();
     }
 
     return 0;
