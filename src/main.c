@@ -1,7 +1,7 @@
 #include "gba_funcs.h"
 #include "gba_colours.h"
 
-struct obj_attribute oam_shadow[128];
+struct obj_attribute oam_shadow[128] = {0};
 
 void hw_sprite_update(void)
 {
@@ -16,38 +16,33 @@ void hw_sprite_update(void)
 
 int main(void)
 {
-    REG_DISPCNT = MODE3 | BG2_ENABLE; /*| OBJ_ENABLE; */
+    REG_DISPCNT = MODE0 | OBJ_ENABLE | OBJ_1D_MAPPING;
 
-    /* Don't mind these, these are just for test */
-    s32 x;
-    s32 y;
-    s32 w;
-    s32 h;
+    for (int i = 0; i < 128; i++)
+    {
+        oam_shadow[i].attr0 = (2 << 8);
+        oam_shadow[i].attr1 = 0;
+        oam_shadow[i].attr2 = 0;
+    }
 
-    w = 20;
-    h = 20;
-    x = (240 >> 1) - (w >> 1);
-    y = (160 >> 1) - (h >> 1);
+    oam_shadow[0].attr0 = 50;
+    oam_shadow[0].attr1 = 100 | (1 << 14);
+    oam_shadow[0].attr2 = 0;
+
+    OBJ_PALRAM[1] = COL_RED;
+
+    /* Note to self: u8 writes to OBJ_VRAM breaks the thing */
+    for (int i = 0; i < 16 * 4; i++)
+    {
+        OBJ_VRAM[i] = 0x1111;
+    }
+
+    hw_sprite_update();
 
     for (;;)
     {
         vblank_wait();
-
-        static s32 old_x = 0;
-
-        for (int yy = y; yy < y + h; yy++)
-            for (int xx = old_x; xx < x; xx++)
-                pixel_put(xx, yy, COL_BLACK);
-
-        old_x = x;
-
-        for (int yy = y; yy < y + h; yy++)
-            for (int xx = x; xx < x + w; xx++)
-                pixel_put(xx, yy, COL_RED);
-
-        x++;
-
-        if (x > 240)
-            x = 0;
     }
+
+    return 0;
 }
