@@ -1,7 +1,11 @@
 #ifndef GBA_TYPES_H
 #define GBA_TYPES_H
 
-#include "gba_typedefs.h"
+typedef unsigned char u8;
+typedef unsigned short u16;
+typedef short s16;
+typedef unsigned int u32;
+typedef int s32;
 
 struct vec2_32
 {
