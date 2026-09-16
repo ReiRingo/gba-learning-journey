@@ -36,4 +36,10 @@ static inline struct colour_vec rgb_vec3(u16 colour)
     };
 }
 
+/** NOTE: This does NOT perform any bound checks */
+static inline void pixel_put(s32 x, s32 y, u16 colour)
+{
+    VRAM[y * 240 + x] = colour;
+}
+
 #endif
