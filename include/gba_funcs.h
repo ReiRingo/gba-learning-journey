@@ -1,6 +1,7 @@
 #ifndef GBA_FUNCS_H
 #define GBA_FUNCS_H
 
+#include "gba_hw.h"
 #include "gba_sprites.h"
 
 static inline void vblank_wait(void)
@@ -42,17 +43,43 @@ static inline void pixel_put(s32 x, s32 y, u16 colour)
     VRAM[y * 240 + x] = colour;
 }
 
-void dma3_copy(const void *source, void *dest, u32 count)
+static inline void dma3_copy(const void *source, void *dest, u32 count)
 {
     REG_DMA3_SAD = (u32)source;
     REG_DMA3_DAD = (u32)dest;
-    REG_DMA3_CNT = count | (0 << 21) | (0 << 23) | (0 << 26) | (1 << 31);
+    REG_DMA3_CNT = count | (1 << 31);
+
+    while (REG_DMA3_CNT & (1 << 31));
 }
 
 void sprite_set_position(struct obj_attribute* sprite, s32 x, s32 y)
 {
     sprite->attr0 = (sprite->attr0 & ~0x00FF) | (y & 0x00FF);
     sprite->attr1 = (sprite->attr1 & ~0x01FF) | (x & 0x01FF);
+}
+
+static u16 keys;
+static u16 keys_prev;
+
+void input_update(void)
+{
+    keys_prev = keys;
+    keys = ~REG_KEYINPUT;
+}
+
+static inline u16 inputs_held(u16 key)
+{
+    return keys & key;
+}
+
+static inline u16 input_pressed(u16 key)
+{
+    return keys & ~keys_prev & key;
+}
+
+static inline u16 key_released(u16 key)
+{
+    return ~keys & keys_prev & key;
 }
 
 #endif

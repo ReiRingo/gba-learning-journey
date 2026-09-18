@@ -1,7 +1,7 @@
 #ifndef GBA_SPR_H
 #define GBA_SPR_H
 
-#include "gba_hw.h"
+#include "gba_types.h"
 
 struct obj_attribute
 {
