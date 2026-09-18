@@ -18,15 +18,15 @@ static inline u16 rgb(unsigned char r, unsigned char g, unsigned char b)
 static inline struct colour_vec rgb15_vec3(u16 colour)
 {
     return (struct colour_vec){
-        .r =  colour        & 0x1F,
-        .g = (colour >> 5)  & 0x1F,
+        .r = colour & 0x1F,
+        .g = (colour >> 5) & 0x1F,
         .b = (colour >> 10) & 0x1F
     };
 }
 
 static inline struct colour_vec rgb_vec3(u16 colour)
 {
-    u16 r =  colour & 0x1F;
+    u16 r = colour & 0x1F;
     u16 g = (colour >> 5) & 0x1F;
     u16 b = (colour >> 10) & 0x1F;
 
@@ -59,15 +59,37 @@ static inline void dma3_fill(u16 value, void *dest, u32 count)
 
     REG_DMA3_SAD = (u32)&src_val;
     REG_DMA3_DAD = (u32)dest;
-
     REG_DMA3_CNT = count | ((2 << 7 | 0 << 5 | 0 << 10 | 0 << 12 | 1 << 15) << 16);
+
+    while (REG_DMA3_CNT & (1 << 31));
+}
+
+// --- 32-bit DMA3 (New) ---
+static inline void dma3_copy_32(const void *source, void *dest, u32 count)
+{
+    REG_DMA3_SAD = (u32)source;
+    REG_DMA3_DAD = (u32)dest;
+    REG_DMA3_CNT = count | (1 << 26) | (1 << 31);
+
+    while (REG_DMA3_CNT & (1 << 31));
+}
+
+static inline void dma3_fill_32(u32 value, void *dest, u32 count)
+{
+    static volatile u32 src_val;
+    src_val = value;
+
+    REG_DMA3_SAD = (u32)&src_val;
+    REG_DMA3_DAD = (u32)dest;
+    REG_DMA3_CNT = count | (1 << 26) | (0 << 9) | (1 << 31);
 
     while (REG_DMA3_CNT & (1 << 31));
 }
 
 static inline void screen_clear(u16 colour)
 {
-    dma3_fill(colour, (void *)VRAM, 240 * 160);
+    u32 colour32 = colour | (colour << 16);
+    dma3_fill_32(colour32, (void *)VRAM, (240 * 160) >> 1);
 }
 
 void sprite_set_position(struct obj_attribute* sprite, s32 x, s32 y)
@@ -85,7 +107,7 @@ void input_update(void)
     keys = ~REG_KEYINPUT;
 }
 
-static inline u16 inputs_held(u16 key)
+static inline u16 input_held(u16 key)
 {
     return keys & key;
 }
