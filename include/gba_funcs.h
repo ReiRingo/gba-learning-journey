@@ -52,6 +52,24 @@ static inline void dma3_copy(const void *source, void *dest, u32 count)
     while (REG_DMA3_CNT & (1 << 31));
 }
 
+static inline void dma3_fill(u16 value, void *dest, u32 count)
+{
+    static volatile u16 src_val;
+    src_val = value;
+
+    REG_DMA3_SAD = (u32)&src_val;
+    REG_DMA3_DAD = (u32)dest;
+
+    REG_DMA3_CNT = count | ((2 << 7 | 0 << 5 | 0 << 10 | 0 << 12 | 1 << 15) << 16);
+
+    while (REG_DMA3_CNT & (1 << 31));
+}
+
+static inline void screen_clear(u16 colour)
+{
+    dma3_fill(colour, (void *)VRAM, 240 * 160);
+}
+
 void sprite_set_position(struct obj_attribute* sprite, s32 x, s32 y)
 {
     sprite->attr0 = (sprite->attr0 & ~0x00FF) | (y & 0x00FF);
