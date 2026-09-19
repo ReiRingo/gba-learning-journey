@@ -1,0 +1,2 @@
+Use these for multi-tiled sprites:
+-gB4 -p -pe 16 -Mw 4 -Mh 4 -ftc

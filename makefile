@@ -1,8 +1,11 @@
 TARGET := JourneyThroughARM
 
-SOURCES := $(wildcard src/*.c) $(wildcard src/*.s)
-OBJECTS := $(SOURCES:src/%.c=build/%.o)
-OBJECTS := $(OBJECTS:src/%.s=build/%.o)
+C_SOURCES := $(wildcard src/*.c) $(wildcard src/*/*.c) $(wildcard src/*/*/*.c)
+S_SOURCES := $(wildcard src/*.s) $(wildcard src/*/*.s) $(wildcard src/*/*/*.s)
+
+SOURCES := $(C_SOURCES) $(S_SOURCES)
+OBJECTS := $(patsubst src/%.c,build/%.o,$(C_SOURCES)) \
+           $(patsubst src/%.s,build/%.o,$(S_SOURCES))
 
 OUTDIR := bin
 

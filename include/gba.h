@@ -3,6 +3,7 @@
 
 #include "gba_funcs.h"
 #include "gba_colours.h"
+#include "gba_input.h"
 
 #define IN_EWRAM __attribute__((section(".ewram")))
 
